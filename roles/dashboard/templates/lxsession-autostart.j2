@@ -1,0 +1,11 @@
+@lxpanel --profile LXDE-pi
+@pcmanfm --desktop --profile LXDE-pi
+
+@chromium-browser --no-startup-window --kiosk
+@chromium-browser --noerrdialogs --start-fullscreen --start-maximized --app={{ dashboard_url }}
+
+@xset s off
+@xset -dpms
+@xset s noblank
+
+@unclutter -idle 0.1

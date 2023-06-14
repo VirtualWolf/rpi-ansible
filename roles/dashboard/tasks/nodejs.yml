@@ -1,0 +1,57 @@
+############################
+# INSTALL NODE.JS AND PM2 #
+###########################
+
+- name: "Download and extract Node.js {{ nodejs_version }}"
+  ansible.builtin.unarchive:
+    src: "https://unofficial-builds.nodejs.org/download/release/v{{ nodejs_version }}/node-v{{ nodejs_version }}-linux-armv6l.tar.xz"
+    dest: "{{ source_dir }}"
+    remote_src: true
+    creates: "{{ source_dir }}/node-v{{ nodejs_version }}-linux-armv6l"
+
+- name: Copy Node.js to /usr/local
+  become: true
+  ansible.builtin.shell: "cp -a {{ source_dir }}/node-v{{ nodejs_version }}-linux-armv6l/* /usr/local"
+  args:
+    creates: /usr/local/bin/node
+
+- name: Install Node.js pm2 package
+  become: true
+  community.general.npm:
+    name: pm2
+    global: true
+
+- name: Install pm2 systemd script to start at boot
+  become: true
+  ansible.builtin.command: pm2 startup
+  args:
+    creates: /etc/systemd/system/pm2-root.service
+
+
+#######################################################
+# INSTALL AND CONFIGURE HYPERPIXEL BRIGHTNESS CONTROL #
+#######################################################
+
+- name: Clone hyperpixel-brightness-control repository
+  ansible.builtin.git:
+    repo: "https://github.com/VirtualWolf/hyperpixel-brightness-control.git"
+    dest: "{{ source_dir }}/hyperpixel-brightness-control"
+
+- name: Install hyperpixel-brightness-control dependencies
+  community.general.npm:
+    path: "{{ source_dir }}/hyperpixel-brightness-control"
+
+- name: Set up hyperpixel-brightness-control configuration
+  ansible.builtin.template:
+    src: templates/hyperpixel-brightness-control-config.j2
+    dest: "{{ source_dir }}/hyperpixel-brightness-control/config.json"
+
+- name: Start hyperpixel-brightness-control with pm2 as the root user
+  become: true
+  ansible.builtin.command: "pm2 start --time {{ source_dir }}/hyperpixel-brightness-control/app.js"
+  args:
+    creates: /root/.pm2/pids/app-0.pid
+
+- name: Save the current pm2 configuration
+  become: true
+  ansible.builtin.command: pm2 save

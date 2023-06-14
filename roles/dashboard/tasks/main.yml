@@ -1,0 +1,23 @@
+- name: "Create {{ source_dir }}"
+  become: true
+  ansible.builtin.file:
+    path: "{{ source_dir }}"
+    state: directory
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+
+- name: HyperPixel display configuration
+  ansible.builtin.import_tasks: hyperpixel_display_drivers.yml
+
+- name: Browser configuration
+  ansible.builtin.import_tasks: browser_and_autostart.yml
+
+- name: VNC configuration
+  ansible.builtin.import_tasks: vnc.yml
+
+- name: Node.js configuration
+  ansible.builtin.import_tasks: nodejs.yml
+
+- name: Reboot
+  become: true
+  ansible.builtin.reboot:

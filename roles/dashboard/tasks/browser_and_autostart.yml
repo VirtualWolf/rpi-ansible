@@ -1,0 +1,26 @@
+########################################################
+# CONFIGURE THE BROWSER AUTOSTART AND INSTALL CHROMIUM #
+########################################################
+
+- name: Remove Raspberry Pi Wizard setup launcher
+  become: true
+  ansible.builtin.file:
+    path: /etc/xdg/autostart/piwiz.desktop
+    state: absent
+
+- name: Install Chromium and unclutter
+  become: true
+  ansible.builtin.apt:
+    pkg:
+      - chromium-browser
+      - unclutter
+
+- name: Create lxession directories
+  ansible.builtin.file:
+    path: "{{ ansible_env.HOME }}/.config/lxsession/LXDE-pi"
+    state: directory
+
+- name: Configure lxsession autostart
+  ansible.builtin.template:
+    src: templates/lxsession-autostart.j2
+    dest: "{{ ansible_env.HOME }}/.config/lxsession/LXDE-pi/autostart"

@@ -1,0 +1,9 @@
+ansible_ssh_extra_args: "-A"
+ansible_user: pi
+
+git_name: VirtualWolf
+git_email: virtualwolf@virtualwolf.org
+
+nodejs_version: "18.16.0"
+
+mqtt_broker_address: fourbee

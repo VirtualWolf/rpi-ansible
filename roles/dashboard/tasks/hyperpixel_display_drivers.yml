@@ -1,0 +1,45 @@
+####################################################
+# INSTALL AND CONFIGURE HYPERPIXEL DISPLAY SUPPORT #
+####################################################
+
+# These are for Debian Bullseye, since Bullseye omes with the
+# HyperPixel overlay already installed
+- name: Configure /boot/config.txt for HyperPixel display
+  when: ansible_facts["distribution_major_version"] == "11"
+  become: true
+  ansible.builtin.lineinfile:
+    path: /boot/config.txt
+    line: dtoverlay=vc4-kms-dpi-hyperpixel4
+
+- name: Copy monitor.conf to rotate the display to landscape
+  when: ansible_facts["distribution_major_version"] == "11"
+  become: true
+  ansible.builtin.copy:
+    src: files/x11/monitor.conf
+    dest: /usr/share/X11/xorg.conf.d/90-monitor.conf
+
+# These are the old legacy manual instructions for Buster
+# since the HyperPixel display overlay needs to be installed
+- name: Clone HyperPixel repository
+  when: ansible_facts["distribution_major_version"] == "10"
+  ansible.builtin.git:
+    repo: "https://github.com/pimoroni/hyperpixel4.git"
+    dest: "{{ source_dir }}/hyperpixel4-drivers"
+    single_branch: true
+    version: pi3
+
+- name: Install HyperPixel drivers and configuration
+  when: ansible_facts["distribution_major_version"] == "10"
+  become: true
+  ansible.builtin.shell:
+    cmd: "./install.sh"
+    chdir: "{{ source_dir }}/hyperpixel4-drivers"
+    creates: /boot/overlays/hyperpixel4.dtbo
+
+- name: Configure /boot/config.txt for HyperPixel display rotation
+  when: ansible_facts["distribution_major_version"] == "10"
+  become: true
+  ansible.builtin.lineinfile:
+    path: /boot/config.txt
+    search_string: display_rotate=0
+    line: display_rotate=1

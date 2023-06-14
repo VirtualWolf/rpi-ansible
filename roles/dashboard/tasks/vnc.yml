@@ -1,0 +1,26 @@
+############################
+# ENABLE AND CONFIGURE VNC #
+############################
+
+- name: Install RealVNC
+  become: true
+  ansible.builtin.apt:
+    name: realvnc-vnc-server
+
+- name: Generate VNC password entry
+  ansible.builtin.shell: "echo {{ lookup('community.general.onepassword', 'Raspberry Pi Zero W VNC password', field='password') }} | vncpasswd -print"
+  register: dashboard_vnc_password
+
+- name: Configure RealVNC to use VNC authentication and set a password
+  become: true
+  ansible.builtin.template:
+    src: templates/vnc-configuration.j2
+    dest: /etc/vnc/config.d/common.custom
+    mode: "600"
+
+- name: Start RealVNC and enable it at boot
+  become: true
+  ansible.builtin.systemd:
+    name: vncserver-x11-serviced
+    enabled: true
+    state: started

@@ -1,0 +1,84 @@
+#################
+# SET UP CONFIG #
+#################
+
+- name: Clone config repository
+  ansible.builtin.git:
+    repo: git@bitbucket.org:VirtualWolf/config.git
+    dest: "{{ source_dir }}/config"
+
+
+###############################
+# STANDARD USER PROFILE SETUP #
+###############################
+
+- name: "Remove existing {{ ansible_env.HOME }}/.bashrc"
+  ansible.builtin.file:
+    path: "{{ ansible_env.HOME }}/.bashrc"
+    state: absent
+
+- name: "Get stats of {{ ansible_env.HOME }}/.profile"
+  become: true
+  ansible.builtin.stat:
+    path: "{{ ansible_env.HOME }}/.profile"
+  register: user_profile
+
+- name: "Remove existing {{ ansible_env.HOME }}/.profile if it's not a symlink"
+  ansible.builtin.file:
+    path: "{{ ansible_env.HOME }}/.profile"
+    state: absent
+  when: user_profile.stat.islnk is defined and user_profile.stat.islnk == False
+
+- name: "Add symlink from config repository as {{ ansible_env.HOME }}/.profile"
+  ansible.builtin.file:
+    src: "{{ source_dir }}/config/profile_init"
+    dest: "{{ ansible_env.HOME }}/.profile"
+    state: link
+
+- name: Update SSH config file permissions
+  ansible.builtin.file:
+    path: "{{ source_dir }}/config/ssh/config"
+    mode: "600"
+
+- name: Add default bashmarks bookmarks
+  ansible.builtin.template:
+    src: templates/bashmarks-default-bookmarks.j2
+    dest: "{{ ansible_env.HOME }}/.sdirs"
+
+
+###########################
+# ROOT USER PROFILE SETUP #
+###########################
+
+- name: Remove existing /root/.profile
+  become: true
+  ansible.builtin.file:
+    path: "/root/.profile"
+    state: absent
+
+- name: "Get stats of /root/.bashrc"
+  become: true
+  ansible.builtin.stat:
+    path: /root/.bashrc
+  register: root_bashrc
+
+- name: Remove existing ~/.bashrc for root user if it's not a symlink
+  become: true
+  ansible.builtin.file:
+    path: "/root/.bashrc"
+    state: absent
+  when: root_bashrc.stat.islnk is defined and root_bashrc.stat.islnk == False
+
+- name: Add symlink from config repository for root user
+  become: true
+  ansible.builtin.file:
+    src: "{{ source_dir }}/config/profile_init"
+    dest: "/root/.bashrc"
+    state: link
+
+- name: Add symlink for bashmarks to root user
+  become: true
+  ansible.builtin.file:
+    src: "{{ ansible_env.HOME }}/.sdirs"
+    dest: /root/.sdirs
+    state: link

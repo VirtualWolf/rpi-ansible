@@ -1,0 +1,119 @@
+#################################
+# ENABLE SPI AND I2C INTERFACES #
+#################################
+
+- name: Enable SPI interface
+  become: true
+  ansible.builtin.lineinfile:
+    path: /boot/config.txt
+    search_string: "#dtparam=spi=on"
+    line: dtparam=spi=on
+  register: spi_is_on
+
+- name: Enable I2C interface
+  become: true
+  ansible.builtin.lineinfile:
+    path: /boot/config.txt
+    search_string: "#dtparam=i2c_arm=on"
+    line: dtparam=i2c_arm=on
+  register: i2c_is_on
+
+
+#################################
+# INSTALL LIBRARIES AND DRIVERS #
+#################################
+
+- name: Install PaPiRus required packages
+  become: true
+  ansible.builtin.apt:
+    pkg:
+      - gcc
+      - make
+      - whiptail
+      - bc
+      - i2c-tools
+      - libfuse-dev
+      - fonts-freefont-ttf
+      - python3-setuptools
+      - python3-pil
+      - python3-smbus
+      - python3-dateutil
+      - python3-distutils
+
+- name: Clone PaPiRus repository
+  become: true
+  ansible.builtin.git:
+    repo: "https://github.com/PiSupply/PaPiRus.git"
+    dest: "{{ source_dir }}/papirus"
+
+- name: Install PaPiRus library
+  become: true
+  ansible.builtin.command: python3 setup.py install
+  args:
+    chdir: "{{ source_dir }}/papirus"
+    creates: /usr/local/bin/papirus-set
+
+- name: Clone epd_fuse driver respository
+  become: true
+  ansible.builtin.git:
+    repo: "https://github.com/repaper/gratis.git"
+    dest: "{{ source_dir }}/gratis"
+
+- name: Build epd_fuse driver
+  become: true
+  ansible.builtin.command: make rpi EPD_IO=epd_io.h PANEL_VERSION='V231_G2'
+  args:
+    chdir: "{{ source_dir }}/gratis"
+    creates: "{{ source_dir }}/gratis/PlatformWithOS/driver-common/epd_fuse"
+
+- name: Install epd_fuse driver
+  become: true
+  ansible.builtin.command: make rpi-install EPD_IO=epd_io.h PANEL_VERSION='V231_G2'
+  args:
+    chdir: "{{ source_dir }}/gratis"
+    creates: /usr/sbin/epd_fuse
+
+- name: Enable epd-fuse service
+  become: true
+  ansible.builtin.systemd:
+    name: epd-fuse
+    enabled: true
+
+- name: Configure PaPiRus library for 2.7" display
+  become: true
+  ansible.builtin.lineinfile:
+    path: /etc/default/epd-fuse
+    line: EPD_SIZE=2.7
+
+- name: Reboot to turn on I2C and SPI interfaces
+  become: true
+  ansible.builtin.reboot:
+  when: spi_is_on is changed and i2c_is_on is changed
+
+
+##############################################
+# CLONE AND CONFIGURE DISPLAYER AND CRON JOB #
+##############################################
+
+- name: Clone papirus-temperature-displayer repository
+  ansible.builtin.git:
+    repo: "https://github.com/VirtualWolf/papirus-temperature-displayer.git"
+    dest: "{{ source_dir }}/papirus-temperature-displayer"
+
+- name: Set up papirus-temperature-displayer configuration
+  ansible.builtin.template:
+    src: templates/papirus-temperature-displayer-config.j2
+    dest: "{{ source_dir }}/papirus-temperature-displayer/config.json"
+
+- name: Add crontab entry to trigger papirus-temperature-displayer every minute between 08:00 and 23:59
+  ansible.builtin.cron:
+    name: Update e-ink display
+    hour: "8-23"
+    job: "{{ source_dir }}/papirus-temperature-displayer/displayer.py >/dev/null 2>&1"
+
+- name: Add crontab entry to clear the display at midnight
+  ansible.builtin.cron:
+    name: Clear e-ink display
+    hour: "0"
+    minute: "0"
+    job: /usr/local/bin/papirus-clear

@@ -8,8 +8,9 @@
     name: realvnc-vnc-server
 
 - name: Generate VNC password entry
-  ansible.builtin.shell: "echo {{ lookup('community.general.onepassword', 'Raspberry Pi Zero W VNC password', field='password') }} | vncpasswd -print"
-  register: dashboard_vnc_password
+  become: true
+  ansible.builtin.shell: "echo {{ vault_dashboards_vnc_password }} | vncpasswd -print"
+  register: dashboards_hashed_vnc_password
 
 - name: Configure RealVNC to use VNC authentication and set a password
   become: true

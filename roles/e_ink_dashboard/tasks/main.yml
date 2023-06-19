@@ -4,19 +4,11 @@
 
 - name: Enable SPI interface
   become: true
-  ansible.builtin.lineinfile:
-    path: /boot/config.txt
-    search_string: "#dtparam=spi=on"
-    line: dtparam=spi=on
-  register: spi_is_on
+  ansible.builtin.command: raspi-config nonint do_spi 0
 
 - name: Enable I2C interface
   become: true
-  ansible.builtin.lineinfile:
-    path: /boot/config.txt
-    search_string: "#dtparam=i2c_arm=on"
-    line: dtparam=i2c_arm=on
-  register: i2c_is_on
+  ansible.builtin.command: raspi-config nonint do_i2c 0
 
 
 #################################
@@ -73,22 +65,21 @@
     chdir: "{{ source_dir }}/gratis"
     creates: /usr/sbin/epd_fuse
 
-- name: Enable epd-fuse service
-  become: true
-  ansible.builtin.systemd:
-    name: epd-fuse
-    enabled: true
-
 - name: Configure PaPiRus library for 2.7" display
   become: true
   ansible.builtin.lineinfile:
     path: /etc/default/epd-fuse
     line: EPD_SIZE=2.7
 
-- name: Reboot to turn on I2C and SPI interfaces
+- name: Enable epd-fuse service
+  become: true
+  ansible.builtin.systemd:
+    name: epd-fuse
+    enabled: true
+
+- name: Reboot
   become: true
   ansible.builtin.reboot:
-  when: spi_is_on is changed and i2c_is_on is changed
 
 
 ##############################################

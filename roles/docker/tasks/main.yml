@@ -20,17 +20,20 @@
 - name: Add Docker repository
   become: true
   ansible.builtin.apt_repository:
-    repo: "deb https://download.docker.com/linux/raspbian {{ ansible_facts['distribution_release'] }} stable"
+    repo: "deb https://download.docker.com/linux/debian {{ ansible_facts['distribution_release'] }} stable"
     state: present
+    update_cache: true
 
-- name: Update apt and install Docker
+- name: Install Docker
   become: true
   ansible.builtin.apt:
     name: docker-ce
     state: latest
-    update_cache: true
 
-- name: Install Docker Module for Python
+- name: Install Docker module and PyYAML modules for Python
   become: true
-  pip:
-    name: docker
+  ansible.builtin.pip:
+    name:
+      - docker
+      - pyyaml
+      - docker-compose

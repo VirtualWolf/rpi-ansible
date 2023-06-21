@@ -1,6 +1,7 @@
 all:
   hosts:
     fourbee:
+    fourbeetoo:
     nil:
     zero:
     pi:

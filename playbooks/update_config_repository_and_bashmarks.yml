@@ -1,0 +1,4 @@
+- name: Update the config repository on all hosts
+  hosts: all
+  roles:
+    - update_config_repository_and_bashmarks

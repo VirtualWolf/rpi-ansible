@@ -1,5 +1,5 @@
 - name: Configure dashboard Pis
   hosts: dashboards
   roles:
-    - common
+    - initialisation
     - dashboard

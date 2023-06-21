@@ -1,0 +1,46 @@
+#################
+# SET UP CONFIG #
+#################
+
+- name: Clone config repository
+  ansible.builtin.git:
+    repo: git@bitbucket.org:VirtualWolf/config.git
+    dest: "{{ source_dir }}/config"
+
+- name: Update SSH config file permissions
+  ansible.builtin.file:
+    path: "{{ source_dir }}/config/ssh/config"
+    mode: "600"
+
+####################
+# UPDATE BASHMARKS #
+####################
+
+- name: Configure default bashmarks bookmarks
+  ansible.builtin.blockinfile:
+    path: "{{ ansible_env.HOME }}/.sdirs"
+    create: true
+    marker: "# {mark} ANSIBLE MANAGED DEFAULT BASHMARKS"
+    block: |
+      export DIR_s="{{ source_dir }}"
+      export DIR_config="{{ source_dir }}/config"
+
+- name: Configure dashboard bashmarks bookmarks
+  ansible.builtin.blockinfile:
+    path: "{{ ansible_env.HOME }}/.sdirs"
+    create: true
+    marker: "# {mark} ANSIBLE MANAGED DASHBOARD BASHMARKS"
+    block: |
+      export hbc="{{ source_dir }}/hyperpixel-brightness-control"
+  when:
+    - inventory_hostname in groups.dashboards
+
+- name: Configure e-ink dashboard bashmarks bookmarks
+  ansible.builtin.blockinfile:
+    path: "{{ ansible_env.HOME }}/.sdirs"
+    create: true
+    marker: "# {mark} ANSIBLE MANAGED E-INK DASHBOARD BASHMARKS"
+    block: |
+      export ptd="{{ source_dir }}/papirus-temperature-displayer"
+  when:
+    - inventory_hostname in groups.e_ink_dashboards

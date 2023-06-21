@@ -1,6 +1,6 @@
 - name: Configure e-ink dashboards
   hosts: e_ink_dashboards
   roles:
-    - common
+    - initialisation
     - docker
     - e_ink_dashboard

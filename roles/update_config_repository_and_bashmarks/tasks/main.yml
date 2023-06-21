@@ -31,7 +31,7 @@
     create: true
     marker: "# {mark} ANSIBLE MANAGED DASHBOARD BASHMARKS"
     block: |
-      export hbc="{{ source_dir }}/hyperpixel-brightness-control"
+      export DIR_hbc="{{ source_dir }}/hyperpixel-brightness-control"
   when:
     - inventory_hostname in groups.dashboards
 
@@ -41,6 +41,6 @@
     create: true
     marker: "# {mark} ANSIBLE MANAGED E-INK DASHBOARD BASHMARKS"
     block: |
-      export ptd="{{ source_dir }}/papirus-temperature-displayer"
+      export DIR_ptd="{{ source_dir }}/papirus-temperature-displayer"
   when:
     - inventory_hostname in groups.e_ink_dashboards

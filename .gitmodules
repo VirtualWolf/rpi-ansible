@@ -1,0 +1,3 @@
+[submodule "roles/config_initialisation"]
+	path = roles/config_initialisation
+	url = git@bitbucket.org:VirtualWolf/config-ansible.git

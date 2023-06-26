@@ -12,6 +12,11 @@
     path: "{{ source_dir }}/config/ssh/config"
     mode: "600"
 
+- name: Set up symlinks for config repository
+  ansible.builtin.include_role:
+    name: config_initialisation
+
+
 ####################
 # UPDATE BASHMARKS #
 ####################

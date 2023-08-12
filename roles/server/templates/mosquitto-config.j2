@@ -1,0 +1,13 @@
+connection {{ mosquitto_connection_name }}
+address {{ mosquitto_remote_connection_address }}
+
+bridge_cafile /mosquitto/certs/ISRG_Root_X1.pem
+bridge_attempt_unsubscribe false
+
+remote_clientid {{ ansible_hostname }}
+
+remote_username {{ mosquitto_remote_username }}
+remote_password {{ mosquitto_remote_password }}
+
+cleansession false
+topic # out 2 "" ""

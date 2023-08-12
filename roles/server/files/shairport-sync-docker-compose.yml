@@ -1,0 +1,16 @@
+version: "3"
+
+services:
+  shairport-sync:
+    image: mikebrady/shairport-sync:4.2
+    network_mode: host
+    restart: unless-stopped
+    # Uncomment if using under Raspbian Buster
+    # security_opt:
+    #   - seccomp:unconfined
+    devices:
+      - "/dev/snd" # ALSA device
+    logging:
+      options:
+        max-size: "200k"
+        max-file: "10"

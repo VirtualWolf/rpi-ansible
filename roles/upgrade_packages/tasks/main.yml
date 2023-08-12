@@ -8,3 +8,18 @@
     upgrade: true
     update_cache: true
     cache_valid_time: 604800 # One week in seconds
+
+- name: Check if a reboot is required
+  ansible.builtin.stat:
+    path: /var/run/reboot-required
+    get_checksum: no
+  register: reboot_required_file
+
+- name: Reboot the server if necessary
+  ansible.builtin.reboot:
+  when: reboot_required_file.stat.exists == true
+
+- name: Remove dependencies that are no longer required
+  become: true
+  ansible.builtin.apt:
+    autoremove: yes

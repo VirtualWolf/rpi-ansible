@@ -4,7 +4,7 @@ ansible_user: pi
 git_name: VirtualWolf
 git_email: virtualwolf@virtualwolf.org
 
-nodejs_version: "18.16.0"
+nodejs_version: "18.17.1"
 
 mqtt_broker_address: fourbee
 

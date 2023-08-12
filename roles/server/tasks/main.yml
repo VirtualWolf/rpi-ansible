@@ -1,0 +1,165 @@
+################################
+# INSTALL AND CONFIGURE CHRONY #
+################################
+
+- name: Install Chrony
+  become: true
+  ansible.builtin.apt:
+    name: chrony
+
+- name: Set pool address
+  become: true
+  ansible.builtin.lineinfile:
+    path: /etc/chrony/chrony.conf
+    regexp: '^pool .* iburst$'
+    line: pool time.cloudflare.com iburst
+
+- name: Set "allow all" to allow access from clients
+  become: true
+  ansible.builtin.lineinfile:
+    path: /etc/chrony/chrony.conf
+    line: allow all
+  register: chrony_config
+
+- name: Restart Chrony systemd unit
+  become: true
+  ansible.builtin.systemd:
+    name: chrony
+    enabled: true
+    state: restarted
+  when: chrony_config.changed
+
+
+#######################################
+# SHAIRPORT SYNC AND JUSTBOOM DAC HAT #
+#######################################
+
+- name: Disable default audio configuration in config.txt for the JustBoom DAC HAT
+  become: true
+  ansible.builtin.lineinfile:
+    path: /boot/config.txt
+    line: dtparam=audio=on
+    state: absent
+
+- name: Enable JustBoom DAC HAT audio configuration
+  become: true
+  ansible.builtin.blockinfile:
+    path: /boot/config.txt
+    block: |
+      dtparam=audio=off
+      dtoverlay=justboom-dac
+    marker: "# {mark} ANSIBLE MANAGED JUSTBOOM CONFIGURATION"
+  register: dac_overlay
+
+- name: Reboot if the DAC HAT overlay has changed
+  become: true
+  ansible.builtin.reboot:
+  when: dac_overlay.changed
+  notify: Reboot system
+
+- name: Create shairport-sync directory
+  ansible.builtin.file:
+    path: "{{ source_dir }}/shairport-sync"
+    state: directory
+
+- name: Copy shairport-sync docker-compose.yml
+  ansible.builtin.copy:
+    src: files/shairport-sync-docker-compose.yml
+    dest: "{{ source_dir }}/shairport-sync/docker-compose.yml"
+
+- name: Start shairport-sync
+  become: true
+  community.docker.docker_compose:
+    project_src: "{{ source_dir }}/shairport-sync"
+
+# For unknown reasons, Avahi inside the Docker container has all sorts of
+# host conflict errors when it first starts, but ONLY the first time it
+# starts. Once it's stopped and started again, it all works. ¯\_(ツ)_/¯
+# https://github.com/mikebrady/shairport-sync/issues/1704
+- name: Stop shairport-sync
+  become: true
+  community.docker.docker_compose:
+    project_src: "{{ source_dir }}/shairport-sync"
+    state: absent
+
+- name: Start shairport-sync again
+  become: true
+  community.docker.docker_compose:
+    project_src: "{{ source_dir }}/shairport-sync"
+
+
+#############
+# MOSQUITTO #
+#############
+
+- name: Clone Mosquitto repository
+  ansible.builtin.git:
+    repo: git@bitbucket.org:VirtualWolfCo/mosquitto.git
+    dest: "{{ source_dir }}/mosquitto"
+
+- name: Add Mosquitto configuration
+  ansible.builtin.template:
+    src: templates/mosquitto-config.j2
+    dest: "{{ source_dir }}/mosquitto/{{ mosquitto_remote_username}}/mosquitto/config/conf.d/bridge.conf"
+
+- name: Start Mosquitto
+  become: true
+  community.docker.docker_compose:
+    project_src: "{{ source_dir }}/mosquitto/{{ mosquitto_remote_username}}"
+    build: true
+
+
+##################################
+# POWERWALL TO PVOUTPUT UPLOADER #
+##################################
+
+- name: Clone powerwall-to-pvoutput-uploader repository
+  ansible.builtin.git:
+    repo: "https://github.com/VirtualWolf/powerwall-to-pvoutput-uploader.git"
+    dest: "{{ source_dir }}/powerwall-to-pvoutput-uploader"
+
+- name: Add powerwall-to-pvoutput-uploader configuration
+  ansible.builtin.template:
+    src: templates/powerwall-to-pvoutput-uploader-config.j2
+    dest: "{{ source_dir }}/powerwall-to-pvoutput-uploader/.env"
+
+- name: Start powerwall-to-pvoutput-uploader
+  become: true
+  community.docker.docker_compose:
+    project_src: "{{ source_dir }}/powerwall-to-pvoutput-uploader"
+    build: true
+
+
+#####################
+# PI HOME DASHBOARD #
+#####################
+
+- name: Clone pi-home-dashboard repository
+  ansible.builtin.git:
+    repo: "https://github.com/VirtualWolf/pi-home-dashboard.git"
+    dest: "{{ source_dir }}/pi-home-dashboard"
+
+- name: Add pi-home-dashboard configuration
+  ansible.builtin.template:
+    src: templates/pi-home-dashboard-config.j2
+    dest: "{{ source_dir }}/pi-home-dashboard/config.json"
+
+- name: Start pi-home-dashboard
+  become: true
+  community.docker.docker_compose:
+    project_src: "{{ source_dir }}/pi-home-dashboard"
+    build: true
+
+- name: Configure crontab to turn displays on
+  ansible.builtin.cron:
+    name: Turn displays on
+    minute: "0"
+    hour: "8"
+    job: "curl -X POST http://{{ ansible_hostname }}/api/hyperpixel -H 'Content-Type: application/json' -d '{\"is_on\": true}'"
+
+- name: Configure crontab to turn displays off
+  ansible.builtin.cron:
+    name: Turn displays off
+    minute: "0"
+    hour: "0"
+    job: "curl -X POST http://{{ ansible_hostname }}/api/hyperpixel -H 'Content-Type: application/json' -d '{\"is_on\": false}'"

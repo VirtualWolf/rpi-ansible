@@ -1,0 +1,23 @@
+#############
+# MOSQUITTO #
+#############
+
+mosquitto_connection_name: "{{ lookup('community.general.onepassword', 'Mosquitto configuration', field='connection name') }}"
+mosquitto_remote_connection_address: "{{ lookup('community.general.onepassword', 'Mosquitto configuration', field='remote address') }}"
+mosquitto_remote_username: "{{ lookup('community.general.onepassword', 'Mosquitto configuration', field='username') }}"
+mosquitto_remote_password: "{{ lookup('community.general.onepassword', 'Mosquitto configuration', field='password') }}"
+
+
+##################################
+# POWERWALL TO PVOUTPUT UPLOADER #
+##################################
+
+powerwall_to_pvoutput_uploader_postgres_password: "{{ lookup('community.general.onepassword', 'PVOutput', field='docker postgres password') }}"
+powerwall_url: https://powerwall
+powerwall_email: "{{ lookup('community.general.onepassword', 'Powerwall', field='username') }}"
+powerwall_password: "{{ lookup('community.general.onepassword', 'Powerwall', field='password') }}"
+pvoutput_timezone: Australia/Sydney
+pvoutput_api_key: "{{ lookup('community.general.onepassword', 'PVOutput', field='api key') }}"
+pvoutput_system_id: "{{ lookup('community.general.onepassword', 'PVOutput', field='system id') }}"
+mqtt_host: "{{ ansible_hostname }}"
+mqtt_topic: home/power

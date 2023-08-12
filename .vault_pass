@@ -1,3 +1,3 @@
 #!/bin/bash
 
-echo $(op read "op://Private/Raspberry Pi Ansible vault/password")
+echo $(op read "op://VMs/Raspberry Pi Ansible vault/password")

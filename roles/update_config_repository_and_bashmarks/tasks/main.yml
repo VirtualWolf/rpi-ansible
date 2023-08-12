@@ -7,11 +7,6 @@
     repo: git@bitbucket.org:VirtualWolf/config.git
     dest: "{{ source_dir }}/config"
 
-- name: Update SSH config file permissions
-  ansible.builtin.file:
-    path: "{{ source_dir }}/config/ssh/config"
-    mode: "600"
-
 - name: Set up symlinks for config repository
   ansible.builtin.include_role:
     name: config_initialisation
@@ -49,3 +44,16 @@
       export DIR_ptd="{{ source_dir }}/papirus-temperature-displayer"
   when:
     - inventory_hostname in groups.e_ink_dashboards
+
+- name: Configure server bashmarks bookmarks
+  ansible.builtin.blockinfile:
+    path: "{{ ansible_env.HOME }}/.sdirs"
+    create: true
+    marker: "# {mark} ANSIBLE MANAGED SERVER BASHMARKS"
+    block: |
+      export DIR_mosquitto="{{ source_dir }}/mosquitto/fourbee"
+      export DIR_pvo="{{ source_dir }}/powerwall-to-pvoutput-uploader"
+      export DIR_phd="{{ source_dir }}/pi-home-dashboard"
+      export DIR_shairport="{{ source_dir }}/shairport-sync"
+  when:
+    - inventory_hostname in groups.server

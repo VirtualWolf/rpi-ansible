@@ -102,6 +102,20 @@
     src: templates/mosquitto-config.j2
     dest: "{{ source_dir }}/mosquitto/{{ mosquitto_remote_username}}/mosquitto/config/conf.d/bridge.conf"
 
+- name: Create data directory
+  ansible.builtin.file:
+    path: "{{ source_dir }}/mosquitto/{{ mosquitto_remote_username }}/mosquitto/data"
+    state: directory
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+
+- name: Create log directory
+  ansible.builtin.file:
+    path: "{{ source_dir }}/mosquitto/{{ mosquitto_remote_username }}/mosquitto/log"
+    state: directory
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+
 - name: Start Mosquitto
   become: true
   community.docker.docker_compose:

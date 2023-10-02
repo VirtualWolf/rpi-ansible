@@ -30,9 +30,9 @@
   when: chrony_config.changed
 
 
-#######################################
-# SHAIRPORT SYNC AND JUSTBOOM DAC HAT #
-#######################################
+####################
+# JUSTBOOM DAC HAT #
+####################
 
 - name: Disable default audio configuration in config.txt for the JustBoom DAC HAT
   become: true
@@ -57,35 +57,120 @@
   when: dac_overlay.changed
   notify: Reboot system
 
-- name: Create shairport-sync directory
-  ansible.builtin.file:
-    path: "{{ source_dir }}/shairport-sync"
-    state: directory
 
-- name: Copy shairport-sync docker-compose.yml
-  ansible.builtin.copy:
-    src: files/shairport-sync-docker-compose.yml
-    dest: "{{ source_dir }}/shairport-sync/docker-compose.yml"
+#########################################
+# SHAIRPORT-SYNC AND NQPTP DEPENDENCIES #
+#########################################
 
-- name: Start shairport-sync
+- name: Install shairport-sync and nqptp dependencies
   become: true
-  community.docker.docker_compose:
-    project_src: "{{ source_dir }}/shairport-sync"
+  ansible.builtin.apt:
+    pkg:
+      - build-essential
+      - autoconf
+      - automake
+      - libtool
+      - libpopt-dev
+      - libconfig-dev
+      - libasound2-dev
+      - avahi-daemon
+      - libavahi-client-dev
+      - libssl-dev
+      - libsoxr-dev
+      - libplist-dev
+      - libsodium-dev
+      - libavutil-dev
+      - libavcodec-dev
+      - libavformat-dev
+      - uuid-dev
+      - libgcrypt-dev
+      - xxd
 
-# For unknown reasons, Avahi inside the Docker container has all sorts of
-# host conflict errors when it first starts, but ONLY the first time it
-# starts. Once it's stopped and started again, it all works. ¯\_(ツ)_/¯
-# https://github.com/mikebrady/shairport-sync/issues/1704
-- name: Stop shairport-sync
-  become: true
-  community.docker.docker_compose:
-    project_src: "{{ source_dir }}/shairport-sync"
-    state: absent
+#########
+# NQPTP #
+#########
 
-- name: Start shairport-sync again
+- name: Clone NQPTP
+  ansible.builtin.git:
+    repo: https://github.com/mikebrady/nqptp.git
+    dest: "{{ source_dir }}/nqptp"
+    version: "{{ nqptp_version }}"
+
+- name: NQPTP autoreconf
+  ansible.builtin.command: autoreconf -fi
+  args:
+    chdir: "{{ source_dir }}/nqptp"
+
+- name: NQPTP configure
+  ansible.builtin.command: ./configure --with-systemd-startup
+  args:
+    chdir: "{{ source_dir }}/nqptp"
+
+- name: NQPTP make
+  ansible.builtin.command: make
+  args:
+    chdir: "{{ source_dir }}/nqptp"
+
+- name: NQPTP make install
   become: true
-  community.docker.docker_compose:
-    project_src: "{{ source_dir }}/shairport-sync"
+  ansible.builtin.command: make install
+  args:
+    chdir: "{{ source_dir }}/nqptp"
+
+- name: Enable and start NQPTP
+  become: true
+  ansible.builtin.systemd:
+    name: nqptp
+    enabled: true
+    state: started
+
+
+##################
+# SHAIRPORT SYNC #
+##################
+
+- name: Clone shairport-sync
+  ansible.builtin.git:
+    repo: https://github.com/mikebrady/shairport-sync.git
+    dest: "{{ source_dir }}/shairport-sync"
+    version: "{{ shairport_sync_version }}"
+
+- name: shairport-sync autoreconf
+  ansible.builtin.command: autoreconf -fi
+  args:
+    chdir: "{{ source_dir }}/shairport-sync"
+
+- name: shairport-sync configure
+  ansible.builtin.command:
+    argv:
+      - ./configure
+      - --sysconfdir=/etc
+      - --with-alsa
+      - --with-soxr
+      - --with-avahi
+      - --with-ssl=openssl
+      - --with-systemd
+      - --with-airplay-2
+  args:
+    chdir: "{{ source_dir }}/shairport-sync"
+
+- name: shairport-sync make
+  ansible.builtin.command: make
+  args:
+    chdir: "{{ source_dir }}/shairport-sync"
+
+- name: shairport-sync make install
+  become: true
+  ansible.builtin.command: make install
+  args:
+    chdir: "{{ source_dir }}/shairport-sync"
+
+- name: Enable and start shairport-sync
+  become: true
+  ansible.builtin.systemd:
+    name: shairport-sync
+    enabled: true
+    state: started
 
 
 #############

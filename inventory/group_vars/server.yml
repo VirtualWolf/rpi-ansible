@@ -21,3 +21,12 @@ pvoutput_api_key: "{{ lookup('community.general.onepassword', 'PVOutput', field=
 pvoutput_system_id: "{{ lookup('community.general.onepassword', 'PVOutput', field='system id') }}"
 mqtt_host: "{{ ansible_hostname }}"
 mqtt_topic: home/power
+
+
+
+############################
+# SHAIRPORT SYNC AND NQPTP #
+############################
+
+shairport_sync_version: "4.3.1"
+nqptp_version: "1.2.4"

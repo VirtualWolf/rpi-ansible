@@ -3,6 +3,7 @@
 ########################################################
 
 - name: Remove Raspberry Pi Wizard setup launcher
+  when: ansible_facts["distribution_major_version"] == "10"
   become: true
   ansible.builtin.file:
     path: /etc/xdg/autostart/piwiz.desktop

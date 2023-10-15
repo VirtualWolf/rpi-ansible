@@ -1,3 +1,19 @@
+# For some reason there's no problem with the Zero W, but the Zero 2 W has
+# horrendous issues with the wifi connection when power_save is turned on
+- name: Disable wifi power saving for Raspberry Pi Zero W 2
+  when: ansible_facts["architecture"] != "arm6l"
+  become: true
+  ansible.builtin.lineinfile:
+    path: /etc/rc.local
+    insertbefore: '^exit 0'
+    line: iw dev wlan0 set power_save off
+  register: power_save
+
+- name: Reboot
+  become: true
+  ansible.builtin.reboot:
+  when: power_save.changed
+
 - name: HyperPixel display configuration
   ansible.builtin.import_tasks: hyperpixel_display_drivers.yml
 
@@ -7,8 +23,11 @@
 - name: VNC configuration
   ansible.builtin.import_tasks: vnc.yml
 
-- name: Node.js configuration
+- name: Install Node.js
   ansible.builtin.import_tasks: nodejs.yml
+
+- name: Hyperpixel Brightness Control configuration
+  ansible.builtin.import_tasks: hyperpixel_brightness_control.yml
 
 - name: Reboot
   become: true

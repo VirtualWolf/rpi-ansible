@@ -1,4 +1,5 @@
 dashboards:
   hosts:
-    zero:
     nil:
+    niltoo:
+    zero:

@@ -23,6 +23,12 @@ mqtt_host: "{{ ansible_hostname }}"
 mqtt_topic: home/power
 
 
+#####################
+# PI HOME DASHBOARD #
+#####################
+
+pi_home_dashboard_latitude: -33.872761
+pi_home_dashboard_longitude: 151.205338
 
 ############################
 # SHAIRPORT SYNC AND NQPTP #

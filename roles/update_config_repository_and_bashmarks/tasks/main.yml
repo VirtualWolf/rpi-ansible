@@ -6,6 +6,8 @@
   ansible.builtin.git:
     repo: git@bitbucket.org:VirtualWolf/config.git
     dest: "{{ source_dir }}/config"
+  tags:
+    - update_config_only
 
 - name: Set up symlinks for config repository
   ansible.builtin.include_role:

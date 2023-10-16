@@ -30,3 +30,6 @@ To make it easier to run individual tasks that might need occasionally updating 
 ### `playbooks/dashboards.yml`
 * `browser` — Configures the web browsers and the URL they'll launch to on boot
 * `refresh_dashboard` — This won't run without explicitly setting the `--tags refresh_dashboard` flag and will do a full browser refresh, useful for picking up changes in the Pi Home Dashboard pages.
+
+### `playbooks/update_config_repository_and_bashmarks.yml`
+* `update_config_only` — Only pulls the latest commits from the configuration repository and doesn't do anything else.

@@ -1,0 +1,4 @@
+- name: Refresh the Pi Home Dashboard to pick up new changes
+  ansible.builtin.command: xdotool key F5
+  environment:
+    DISPLAY: ":0.0"

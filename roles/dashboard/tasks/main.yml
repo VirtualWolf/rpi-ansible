@@ -34,3 +34,9 @@
 - name: Reboot
   become: true
   ansible.builtin.reboot:
+
+- name: Refresh Dashboard
+  ansible.builtin.import_tasks: refresh_dashboard.yml
+  tags:
+    - refresh_dashboard
+    - never

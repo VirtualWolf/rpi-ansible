@@ -28,4 +28,5 @@ To make it easier to run individual tasks that might need occasionally updating 
 * `shairport-sync`
 
 ### `playbooks/dashboards.yml`
-* `browser`
+* `browser` — Configures the web browsers and the URL they'll launch to on boot
+* `refresh_dashboard` — This won't run without explicitly setting the `--tags refresh_dashboard` flag and will do a full browser refresh, useful for picking up changes in the Pi Home Dashboard pages.

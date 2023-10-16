@@ -9,12 +9,13 @@
     path: /etc/xdg/autostart/piwiz.desktop
     state: absent
 
-- name: Install Chromium and unclutter
+- name: Install Chromium, unclutter, and xdotool
   become: true
   ansible.builtin.apt:
     pkg:
       - chromium-browser
       - unclutter
+      - xdotool
 
 - name: Create lxession directories
   ansible.builtin.file:

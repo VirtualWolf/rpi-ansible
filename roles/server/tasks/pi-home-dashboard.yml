@@ -1,0 +1,33 @@
+#####################
+# PI HOME DASHBOARD #
+#####################
+
+- name: Clone pi-home-dashboard repository
+  ansible.builtin.git:
+    repo: "https://github.com/VirtualWolf/pi-home-dashboard.git"
+    dest: "{{ source_dir }}/pi-home-dashboard"
+
+- name: Add pi-home-dashboard configuration
+  ansible.builtin.template:
+    src: templates/pi-home-dashboard-config.j2
+    dest: "{{ source_dir }}/pi-home-dashboard/config.json"
+
+- name: Start pi-home-dashboard
+  become: true
+  community.docker.docker_compose:
+    project_src: "{{ source_dir }}/pi-home-dashboard"
+    build: true
+
+- name: Configure crontab to turn displays on
+  ansible.builtin.cron:
+    name: Turn displays on
+    minute: "0"
+    hour: "8"
+    job: "curl -X POST http://{{ ansible_hostname }}/api/hyperpixel -H 'Content-Type: application/json' -d '{\"is_on\": true}'"
+
+- name: Configure crontab to turn displays off
+  ansible.builtin.cron:
+    name: Turn displays off
+    minute: "0"
+    hour: "0"
+    job: "curl -X POST http://{{ ansible_hostname }}/api/hyperpixel -H 'Content-Type: application/json' -d '{\"is_on\": false}'"

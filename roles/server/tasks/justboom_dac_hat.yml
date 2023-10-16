@@ -1,0 +1,26 @@
+####################
+# JUSTBOOM DAC HAT #
+####################
+
+- name: Disable default audio configuration in config.txt for the JustBoom DAC HAT
+  become: true
+  ansible.builtin.lineinfile:
+    path: /boot/config.txt
+    line: dtparam=audio=on
+    state: absent
+
+- name: Enable JustBoom DAC HAT audio configuration
+  become: true
+  ansible.builtin.blockinfile:
+    path: /boot/config.txt
+    block: |
+      dtparam=audio=off
+      dtoverlay=justboom-dac
+    marker: "# {mark} ANSIBLE MANAGED JUSTBOOM CONFIGURATION"
+  register: dac_overlay
+
+- name: Reboot if the DAC HAT overlay has changed
+  become: true
+  ansible.builtin.reboot:
+  when: dac_overlay.changed
+  notify: Reboot system

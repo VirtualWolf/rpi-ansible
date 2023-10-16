@@ -1,0 +1,30 @@
+################################
+# INSTALL AND CONFIGURE CHRONY #
+################################
+
+- name: Install Chrony
+  become: true
+  ansible.builtin.apt:
+    name: chrony
+
+- name: Set pool address
+  become: true
+  ansible.builtin.lineinfile:
+    path: /etc/chrony/chrony.conf
+    regexp: '^pool .* iburst$'
+    line: pool time.cloudflare.com iburst
+
+- name: Set "allow all" to allow access from clients
+  become: true
+  ansible.builtin.lineinfile:
+    path: /etc/chrony/chrony.conf
+    line: allow all
+  register: chrony_config
+
+- name: Restart Chrony systemd unit
+  become: true
+  ansible.builtin.systemd:
+    name: chrony
+    enabled: true
+    state: restarted
+  when: chrony_config.changed

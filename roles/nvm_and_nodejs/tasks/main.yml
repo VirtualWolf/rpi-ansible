@@ -3,11 +3,26 @@
     curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
   args:
     creates: "{{ ansible_env.HOME }}/.nvm/nvm.sh"
+  tags:
+    - nvm_and_nodejs
 
-- name: Install Node 18 LTS
+- name: Add NVM variables to environment
+  ansible.builtin.blockinfile:
+    path: "{{ ansible_env.HOME }}/.my.profile"
+    create: true
+    marker: "# {mark} ANSIBLE-MANAGED NVM"
+    block: |
+      export NVM_DIR="{{ ansible_env.HOME }}/.nvm"
+      [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+  tags:
+    - nvm_and_nodejs
+
+- name: Install Node.js
   shell: >
     . {{ ansible_env.HOME }}/.nvm/nvm.sh && nvm install {{ nodejs_version }}
   args:
     executable: /bin/bash
     chdir: "{{ ansible_env.HOME }}"
     creates: "{{ ansible_env.HOME }}/.nvm/versions/node/v{{ nodejs_version }}"
+  tags:
+    - nvm_and_nodejs

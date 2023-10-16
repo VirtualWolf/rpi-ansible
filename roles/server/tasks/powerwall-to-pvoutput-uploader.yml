@@ -1,0 +1,19 @@
+##################################
+# POWERWALL TO PVOUTPUT UPLOADER #
+##################################
+
+- name: Clone powerwall-to-pvoutput-uploader repository
+  ansible.builtin.git:
+    repo: "https://github.com/VirtualWolf/powerwall-to-pvoutput-uploader.git"
+    dest: "{{ source_dir }}/powerwall-to-pvoutput-uploader"
+
+- name: Add powerwall-to-pvoutput-uploader configuration
+  ansible.builtin.template:
+    src: templates/powerwall-to-pvoutput-uploader-config.j2
+    dest: "{{ source_dir }}/powerwall-to-pvoutput-uploader/.env"
+
+- name: Start powerwall-to-pvoutput-uploader
+  become: true
+  community.docker.docker_compose:
+    project_src: "{{ source_dir }}/powerwall-to-pvoutput-uploader"
+    build: true

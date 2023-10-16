@@ -9,6 +9,14 @@
   tags:
     - update_config_only
 
+- name: Update SSH config file permissions after a repository update
+  ansible.builtin.file:
+    path: "{{ source_dir }}/config/ssh/config"
+    mode: "600"
+  tags:
+    - never
+    - update_config_only
+
 - name: Set up symlinks for config repository
   ansible.builtin.include_role:
     name: config_initialisation

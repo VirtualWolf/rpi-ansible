@@ -1,8 +1,7 @@
 @lxpanel --profile LXDE-pi
 @pcmanfm --desktop --profile LXDE-pi
 
-@chromium-browser --no-startup-window --kiosk
-@chromium-browser --noerrdialogs --start-fullscreen --start-maximized --app={{ dashboard_url }}
+@chromium-browser --no-startup-window --kiosk --noerrdialogs --start-fullscreen --start-maximized --app={{ dashboard_url }}
 
 @xset s off
 @xset -dpms

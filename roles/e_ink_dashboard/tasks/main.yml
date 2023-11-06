@@ -96,10 +96,10 @@
     src: templates/papirus-temperature-displayer-config.j2
     dest: "{{ source_dir }}/papirus-temperature-displayer/config.json"
 
-- name: Add crontab entry to trigger papirus-temperature-displayer every minute between 08:00 and 23:59
+- name: Add crontab entry to trigger papirus-temperature-displayer every minute between 07:00 and 23:59
   ansible.builtin.cron:
     name: Update e-ink display
-    hour: "8-23"
+    hour: "7-23"
     job: "{{ source_dir }}/papirus-temperature-displayer/displayer.py >/dev/null 2>&1"
 
 - name: Add crontab entry to clear the display at midnight

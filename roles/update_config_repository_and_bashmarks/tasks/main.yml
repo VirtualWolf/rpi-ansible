@@ -6,6 +6,7 @@
   ansible.builtin.git:
     repo: git@bitbucket.org:VirtualWolf/config.git
     dest: "{{ source_dir }}/config"
+  register: config_repository
   tags:
     - update_config_only
 
@@ -13,11 +14,11 @@
   ansible.builtin.file:
     path: "{{ source_dir }}/config/ssh/config"
     mode: "600"
+  when: config_repository.changed == true
   tags:
-    - never
     - update_config_only
 
-- name: Set up symlinks for config repository
+- name: Run user shell setup tasks
   ansible.builtin.include_role:
     name: config_initialisation
 

@@ -1,0 +1,3 @@
+Unattended-Upgrade::Origins-Pattern {
+    "origin=Docker,a=${distro_codename},l=Docker CE";
+};

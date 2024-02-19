@@ -53,10 +53,48 @@
   become: true
   ansible.builtin.apt:
     pkg:
+      - unattended-upgrades
+      - apt-config-auto-update
       - vim
       - git
       - tmux
       - jq
+
+# To see all the available update sources to use, run:
+# sudo apt-cache policy | grep 'o=[^,]*.a=[^,]*'
+
+# This is necessary for Buster on the Rasperry Pi Zero W
+- name: Add Raspbian sources to unattended-upgrades list
+  become: true
+  ansible.builtin.copy:
+    src: files/51add-raspbian-sources-to-unattended-upgrades
+    dest: /etc/apt/apt.conf.d/
+  when:
+    - ansible_facts["distribution_major_version"] == "10"
+
+- name: Add Docker to unattended-upgrades packages
+  become: true
+  ansible.builtin.copy:
+    src: files/51add-docker-to-unattended-upgrades
+    dest: /etc/apt/apt.conf.d/
+  when:
+    - inventory_hostname in groups.server
+
+- name: Enable auto-reboot for unattended-upgrades
+  become: true
+  ansible.builtin.copy:
+    src: files/51automatic-reboot-for-unattended-upgrades
+    dest: /etc/apt/apt.conf.d/
+
+- name: Enable unattended-upgrades cron job
+  become: true
+  ansible.builtin.cron:
+    name: Schedule automatic upgrades
+    minute: 0
+    hour: 20
+    user: root
+    cron_file: unattended-upgrades
+    job: /usr/bin/unattended-upgrade -d
 
 
 ###########################

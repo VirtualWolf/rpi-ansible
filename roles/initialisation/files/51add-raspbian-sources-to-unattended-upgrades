@@ -1,0 +1,4 @@
+Unattended-Upgrade::Origins-Pattern {
+    "origin=Raspberry Pi Foundation,l=Raspberry Pi Foundation";
+    "origin=Raspbian,l=Raspbian";
+};

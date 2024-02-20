@@ -1,0 +1,14 @@
+[Unit]
+Description=Send Pushover notification on reboot
+Requires=network.target
+DefaultDependencies=no
+Before=reboot.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=true
+ExecStart=/bin/true
+ExecStop=curl -X POST --data-urlencode "message={{ ansible_hostname }} is rebooting" "https://api.pushover.net/1/messages.json?token={{ lookup('community.general.onepassword', 'Pushover', field='raspberry pi monitor') }}&user={{ lookup('community.general.onepassword', 'Pushover', field='api username') }}"
+
+[Install]
+WantedBy=multi-user.target

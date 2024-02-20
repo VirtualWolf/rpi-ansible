@@ -96,6 +96,22 @@
     cron_file: unattended-upgrades
     job: /usr/bin/unattended-upgrade -d
 
+- name: Add systemd unit for Pushover notifications on reboot
+  become: true
+  ansible.builtin.template:
+    src: templates/pushover.service.j2
+    dest: /usr/lib/systemd/system/pushover.service
+    mode: '0400'
+  register: pushover
+
+- name: Enable Pushover systemd service
+  become: true
+  ansible.builtin.systemd:
+    name: pushover
+    enabled: true
+    state: started
+    daemon_reload: true
+
 
 ###########################
 # CREATE SOURCE DIRECTORY #

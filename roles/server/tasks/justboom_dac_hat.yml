@@ -9,24 +9,16 @@
     line: dtparam=audio=on
     state: absent
 
-- name: Enable JustBoom DAC HAT audio configuration
+- name: Enable JustBoom DAC HAT audio configuration and disable HDMI audio
   become: true
   ansible.builtin.blockinfile:
     path: /boot/config.txt
     block: |
       dtparam=audio=off
+      dtoverlay=vc4-kms-v3d,noaudio
       dtoverlay=justboom-dac
     marker: "# {mark} ANSIBLE MANAGED JUSTBOOM CONFIGURATION"
   register: dac_overlay
-
-# On the Raspberry Pi 4B+, the HDMI output is card #0 and the DAC HAT is #1
-- name: Set default audio output to the DAC HAT
-  become: true
-  ansible.builtin.blockinfile:
-    path: /etc/asound.conf
-    block: |
-      defaults.pcm.card 1
-      defaults.ctl.card 1
 
 - name: Reboot if the DAC HAT overlay has changed
   become: true

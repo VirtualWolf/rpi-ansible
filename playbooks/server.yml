@@ -5,8 +5,3 @@
     - docker
     - nvm_and_nodejs
     - server
-  handlers:
-    - name: Reboot system
-      become: true
-      ansible.builtin.reboot:
-        post_reboot_delay: 30

@@ -1,3 +1,17 @@
+# Fourbee is always connected directly via ethernet
+# and so has no need for wifi or Bluetooth to be on
+- name: Disable wifi and Bluetooth for Fourbee
+  become: true
+  ansible.builtin.blockinfile:
+    path: /boot/config.txt
+    block: |
+      dtoverlay=disable-wifi
+      dtoverlay=disable-bt
+    marker: "# {mark} ANSIBLE MANAGED WIRELESS CONFIGURATION"
+  notify: Reboot system
+  when:
+    - inventory_hostname == 'fourbee'
+
 - name: Install and configure Chrony
   ansible.builtin.import_tasks: chrony.yml
   tags:

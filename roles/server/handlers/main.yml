@@ -1,0 +1,11 @@
+- name: Reboot system
+  become: true
+  ansible.builtin.reboot:
+    post_reboot_delay: 10
+
+- name: Restart Mosquitto
+  become: true
+  ansible.builtin.systemd:
+    name: mosquitto
+    enabled: true
+    state: restarted

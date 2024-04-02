@@ -5,9 +5,6 @@
       - apt-transport-https
       - ca-certificates
       - software-properties-common
-      - python3-pip
-      - virtualenv
-      - python3-setuptools
     state: latest
 
 - name: Add Docker GPG key
@@ -30,10 +27,16 @@
     name: docker-ce
     state: latest
 
-- name: Install Docker module and PyYAML modules for Python
+- name: Enable live restore
   become: true
-  ansible.builtin.pip:
-    name:
-      - docker
-      - pyyaml
-      - docker-compose
+  ansible.builtin.copy:
+    src: files/daemon.json
+    dest: /etc/docker/
+  register: live_restore_enabled
+
+- name: Reload Docker
+  become: true
+  ansible.builtin.systemd:
+    name: docker
+    state: reloaded
+  when: live_restore_enabled.changed

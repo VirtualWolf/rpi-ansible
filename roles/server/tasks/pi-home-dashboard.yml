@@ -14,20 +14,20 @@
 
 - name: Start pi-home-dashboard
   become: true
-  community.docker.docker_compose:
+  community.docker.docker_compose_v2:
     project_src: "{{ source_dir }}/pi-home-dashboard"
-    build: true
+    build: policy
 
 - name: Configure crontab to turn displays on
   ansible.builtin.cron:
     name: Turn displays on
     minute: "0"
     hour: "7"
-    job: "curl -X POST http://{{ ansible_hostname }}/api/hyperpixel -H 'Content-Type: application/json' -d '{\"is_on\": true}'"
+    job: "mosquitto_pub -t automation/hyperpixel -m '{\"is_on\": true}' -q 2"
 
 - name: Configure crontab to turn displays off
   ansible.builtin.cron:
     name: Turn displays off
     minute: "0"
     hour: "0"
-    job: "curl -X POST http://{{ ansible_hostname }}/api/hyperpixel -H 'Content-Type: application/json' -d '{\"is_on\": false}'"
+    job: "mosquitto_pub -t automation/hyperpixel -m '{\"is_on\": false}' -q 2"

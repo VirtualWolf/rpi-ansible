@@ -40,6 +40,17 @@
           name = VirtualWolf
           email = virtualwolf@virtualwolf.org
 
+- name: Set SELECTED_EDITOR
+  ansible.builtin.copy:
+    dest: "{{ ansible_env.HOME }}/.selected_editor"
+    content: "SELECTED_EDITOR=/usr/bin/vim.basic"
+
+- name: Set SELECTED_EDITOR for root user
+  become: true
+  ansible.builtin.copy:
+    dest: "/root/.selected_editor"
+    content: "SELECTED_EDITOR=/usr/bin/vim.basic"
+
 
 #####################################
 # UPDATE APT CACHES, UPGRADE SYSTEM #

@@ -8,6 +8,16 @@ This repository contains the [Ansible](https://www.ansible.com) playbooks I use 
 * `playbooks/e_ink_dashboards.yml` configures the Raspberry Pi 3B+ with attached 2.7" [Pi Supply e-ink display](https://uk.pi-supply.com/products/papirus-epaper-eink-screen-hat-for-raspberry-pi) that displays the temperature and humidity from my [pi-home-dashboard](https://github.com/VirtualWolf/pi-home-dashboard) repository.
 * `playbooks/server.yml` configures the Raspberry Pi 4B+ that runs everything else.
 
+## Optional: Adding a self-contained Ansible installation
+
+* Install and configure [pyenv](https://github.com/pyenv/pyenv)
+* Install the version of Python for this project — `pyenv install`
+* Add a new virtualenv for this project — `python3 -m venv .venv`
+* Activate the virtualenv — `. .venv/bin/activate`
+* Install Ansible — `pip3 install -r requirements.txt`
+
+Before running any `ansible-playbook` commands, load the virtualenv with `. .venv/bin/activate`.
+
 ## Running
 Run as `ansible-playbook playbooks/<playbook>.yml`.
 

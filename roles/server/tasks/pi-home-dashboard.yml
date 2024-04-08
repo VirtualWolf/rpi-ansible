@@ -6,17 +6,20 @@
   ansible.builtin.git:
     repo: "https://github.com/VirtualWolf/pi-home-dashboard.git"
     dest: "{{ source_dir }}/pi-home-dashboard"
+  register: repository
 
 - name: Add pi-home-dashboard configuration
   ansible.builtin.template:
     src: templates/pi-home-dashboard-config.j2
     dest: "{{ source_dir }}/pi-home-dashboard/config.json"
+  register: config
 
 - name: Start pi-home-dashboard
   become: true
   community.docker.docker_compose_v2:
     project_src: "{{ source_dir }}/pi-home-dashboard"
-    build: policy
+    build: "{{ 'always' if repository.changed else 'policy' }}"
+    state: "{{ 'restarted' if config.changed else 'present' }}"
 
 - name: Configure crontab to turn displays on
   ansible.builtin.cron:

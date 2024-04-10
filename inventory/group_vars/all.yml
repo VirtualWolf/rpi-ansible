@@ -1,5 +1,6 @@
 ansible_ssh_extra_args: "-A"
 ansible_user: pi
+timezone: Australia/Sydney
 
 git_name: VirtualWolf
 git_email: virtualwolf@virtualwolf.org

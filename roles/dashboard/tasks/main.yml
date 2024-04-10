@@ -30,6 +30,8 @@
 
 - name: Hyperpixel Brightness Control configuration
   ansible.builtin.import_tasks: hyperpixel_brightness_control.yml
+  tags:
+    - hyperpixel_brightness_control
 
 - name: Reboot
   become: true

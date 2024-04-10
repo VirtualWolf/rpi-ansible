@@ -23,6 +23,7 @@
   ansible.builtin.git:
     repo: "https://github.com/VirtualWolf/hyperpixel-brightness-control.git"
     dest: "{{ source_dir }}/hyperpixel-brightness-control"
+  register: repository
 
 - name: Install hyperpixel-brightness-control dependencies
   community.general.npm:
@@ -32,6 +33,7 @@
   ansible.builtin.template:
     src: templates/hyperpixel-brightness-control-config.j2
     dest: "{{ source_dir }}/hyperpixel-brightness-control/config.json"
+  register: configuration
 
 
 #######################################
@@ -43,6 +45,11 @@
   ansible.builtin.command: "pm2 start --time {{ source_dir }}/hyperpixel-brightness-control/app.js"
   args:
     creates: /root/.pm2/pids/app-0.pid
+
+- name: Restart hyperpixel-brightness-control if the repository or configuration has been updated
+  become: true
+  ansible.builtin.command: "pm2 restart --update-env {{ source_dir }}/hyperpixel-brightness-control/app.js"
+  when: repository.changed or configuration.changed
 
 - name: Save the current pm2 configuration
   become: true

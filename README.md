@@ -23,7 +23,7 @@ Run as `ansible-playbook playbooks/<playbook>.yml`.
 
 To specify a single host, add `-l <host>`.
 
-To run only a specific subset of a playbook, use one of the tags described below.
+To run only a specific subset of a playbook, use one of the tags described below with the `-t` flag.
 
 ## Tags
 
@@ -38,7 +38,8 @@ To make it easier to run individual tasks that might need occasionally updating 
 * `shairport-sync`
 
 ### `playbooks/dashboards.yml`
-* `browser` — Configures the web browsers and the URL they'll launch to on boot
+* `browser` — Configures the web browsers and the URL they'll launch to on boot.
+* `hyperpixel_brightness_control` — Pulls updates from the hyperpixel-brightness-control repository and updates configuration settings.
 * `refresh_dashboard` — This won't run without explicitly setting the `--tags refresh_dashboard` flag and will do a full browser refresh, useful for picking up changes in the Pi Home Dashboard pages.
 
 ### `playbooks/update_config_repository_and_bashmarks.yml`

@@ -6,6 +6,4 @@ git_email: virtualwolf@virtualwolf.org
 
 nodejs_version: "18.17.1"
 
-mqtt_broker_address: fourbee
-
 source_dir: /usr/local/src/pi

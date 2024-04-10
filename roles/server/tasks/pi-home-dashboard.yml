@@ -26,11 +26,11 @@
     name: Turn displays on
     minute: "0"
     hour: "7"
-    job: "mosquitto_pub -t automation/hyperpixel -m '{\"is_on\": true}' -q 2"
+    job: "mosquitto_pub -t automation/hyperpixel -m '{\"is_on\": true}' -q 2 -r"
 
 - name: Configure crontab to turn displays off
   ansible.builtin.cron:
     name: Turn displays off
     minute: "0"
     hour: "0"
-    job: "mosquitto_pub -t automation/hyperpixel -m '{\"is_on\": false}' -q 2"
+    job: "mosquitto_pub -t automation/hyperpixel -m '{\"is_on\": false}' -q 2 -r"

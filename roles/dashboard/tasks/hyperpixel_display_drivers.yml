@@ -2,17 +2,16 @@
 # INSTALL AND CONFIGURE HYPERPIXEL DISPLAY SUPPORT #
 ####################################################
 
-# These are for Debian Bullseye, since Bullseye omes with the
-# HyperPixel overlay already installed
+# Bullseye and higher come with the HyperPixel overlay already installed
 - name: Configure /boot/config.txt for HyperPixel display
-  when: ansible_facts["distribution_major_version"] == "11"
+  when: ansible_facts["distribution_major_version"] | int >= 11
   become: true
   ansible.builtin.lineinfile:
     path: /boot/config.txt
     line: dtoverlay=vc4-kms-dpi-hyperpixel4
 
 - name: Copy monitor.conf to rotate the display to landscape
-  when: ansible_facts["distribution_major_version"] == "11"
+  when: ansible_facts["distribution_major_version"] | int >= 11
   become: true
   ansible.builtin.copy:
     src: files/x11/monitor.conf

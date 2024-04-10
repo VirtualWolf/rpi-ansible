@@ -1,19 +1,11 @@
-########################################################
-# CONFIGURE THE BROWSER AUTOSTART AND INSTALL CHROMIUM #
-########################################################
+#####################################
+# COMMON BROWSER AUTOSTART SETTINGS #
+#####################################
 
-- name: Remove Raspberry Pi Wizard setup launcher
-  when: ansible_facts["distribution_major_version"] == "10"
-  become: true
-  ansible.builtin.file:
-    path: /etc/xdg/autostart/piwiz.desktop
-    state: absent
-
-- name: Install Chromium, unclutter, and xdotool
+- name: Install unclutter and xdotool
   become: true
   ansible.builtin.apt:
     pkg:
-      - chromium-browser
       - unclutter
       - xdotool
 
@@ -26,3 +18,22 @@
   ansible.builtin.template:
     src: templates/lxsession-autostart.j2
     dest: "{{ ansible_env.HOME }}/.config/lxsession/LXDE-pi/autostart"
+
+
+###############################################
+# CONFIGURE FOR RASPBERRY PI ZERO W ON BUSTER #
+###############################################
+
+- name: Remove Raspberry Pi Wizard setup launcher
+  when: ansible_facts["distribution_major_version"] == "10"
+  become: true
+  ansible.builtin.file:
+    path: /etc/xdg/autostart/piwiz.desktop
+    state: absent
+
+- name: Install Chromium
+  when: ansible_facts["distribution_major_version"] == "10"
+  become: true
+  ansible.builtin.apt:
+    pkg:
+      - chromium-browser

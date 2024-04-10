@@ -17,7 +17,7 @@
   ansible.builtin.template:
     src: templates/vnc-configuration.j2
     dest: /etc/vnc/config.d/common.custom
-    mode: "600"
+    mode: "664"
 
 - name: Start RealVNC and enable it at boot
   become: true

@@ -8,3 +8,11 @@ git_email: virtualwolf@virtualwolf.org
 nodejs_version: "18.17.1"
 
 source_dir: /usr/local/src/pi
+
+# Bookworm (Debian 12) moved /boot/config.txt to /boot/firmware/config.txt
+boot_config_txt_path: |-
+  {%- if ansible_facts['distribution_major_version'] | int >= 12 -%}
+    /boot/firmware/config.txt
+  {%- else -%}
+    /boot/config.txt
+  {%- endif -%}

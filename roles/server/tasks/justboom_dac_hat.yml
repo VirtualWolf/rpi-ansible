@@ -5,14 +5,14 @@
 - name: Disable default audio configuration in config.txt for the JustBoom DAC HAT
   become: true
   ansible.builtin.lineinfile:
-    path: /boot/config.txt
+    path: "{{ boot_config_txt_path }}"
     line: dtparam=audio=on
     state: absent
 
 - name: Enable JustBoom DAC HAT audio configuration and disable HDMI audio
   become: true
   ansible.builtin.blockinfile:
-    path: /boot/config.txt
+    path: "{{ boot_config_txt_path }}"
     block: |
       dtparam=audio=off
       dtoverlay=vc4-kms-v3d,noaudio

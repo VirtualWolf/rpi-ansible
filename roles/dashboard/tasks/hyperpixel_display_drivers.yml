@@ -3,11 +3,11 @@
 ####################################################
 
 # Bullseye and higher come with the HyperPixel overlay already installed
-- name: Configure /boot/config.txt for HyperPixel display
+- name: Configure config.txt for HyperPixel display
   when: ansible_facts["distribution_major_version"] | int >= 11
   become: true
   ansible.builtin.lineinfile:
-    path: /boot/config.txt
+    path: "{{ boot_config_txt_path }}"
     line: dtoverlay=vc4-kms-dpi-hyperpixel4
 
 - name: Copy monitor.conf to rotate the display to landscape
@@ -35,10 +35,10 @@
     chdir: "{{ source_dir }}/hyperpixel4-drivers"
     creates: /boot/overlays/hyperpixel4.dtbo
 
-- name: Configure /boot/config.txt for HyperPixel display rotation
+- name: Configure config.txt for HyperPixel display rotation
   when: ansible_facts["distribution_major_version"] == "10"
   become: true
   ansible.builtin.lineinfile:
-    path: /boot/config.txt
+    path: "{{ boot_config_txt_path }}"
     search_string: display_rotate=0
     line: display_rotate=1

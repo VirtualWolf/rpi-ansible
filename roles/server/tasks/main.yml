@@ -3,7 +3,7 @@
 - name: Disable wifi and Bluetooth for Fourbee
   become: true
   ansible.builtin.blockinfile:
-    path: /boot/config.txt
+    path: "{{ boot_config_txt_path }}"
     block: |
       dtoverlay=disable-wifi
       dtoverlay=disable-bt

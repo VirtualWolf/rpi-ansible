@@ -1,4 +1,0 @@
-- name: Upgrade packages on hosts
-  hosts: all
-  roles:
-    - upgrade_packages

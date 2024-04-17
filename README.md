@@ -29,18 +29,21 @@ To run only a specific subset of a playbook, use one of the tags described below
 
 To make it easier to run individual tasks that might need occasionally updating separately from running every task in an entire playbook, the following tags are available:
 
-### `playbooks/server.yml`
+### `server.yml`, `dashboards.yml`, `e_ink_dashboards.yml`
+* `install-packages` — Updates to packages installed with `apt install` can be applied to all the runbooks with this tag.
+
+### `server.yml`
 * `chrony`
-* `nvm_and_nodejs`
+* `nodejs`
 * `mosquitto`
 * `pi-home-dashboard`
 * `pvoutput-uploader`
 * `shairport-sync`
 
-### `playbooks/dashboards.yml`
+### `dashboards.yml`
 * `browser` — Configures the web browsers and the URL they'll launch to on boot.
-* `hyperpixel_brightness_control` — Pulls updates from the hyperpixel-brightness-control repository and updates configuration settings.
-* `refresh_dashboard` — This won't run without explicitly setting the `--tags refresh_dashboard` flag and will do a full browser refresh, useful for picking up changes in the Pi Home Dashboard pages.
+* `hyperpixel-brightness-control` — Pulls updates from the hyperpixel-brightness-control repository and updates configuration settings.
+* `refresh-dashboard` — This won't run without explicitly setting the `--tags refresh-dashboard` flag and will do a full browser refresh, useful for picking up changes in the Pi Home Dashboard pages.
 
-### `playbooks/update_config_repository_and_bashmarks.yml`
+### `update_config_repository_and_bashmarks.yml`
 * `update_config_only` — Only pulls the latest commits from the configuration repository and doesn't do anything else.

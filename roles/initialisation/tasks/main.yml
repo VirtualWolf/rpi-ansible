@@ -74,6 +74,9 @@
       - git
       - tmux
       - jq
+      - mosh
+  tags:
+    - install-packages
 
 # To see all the available update sources to use, run:
 # sudo apt-cache policy | grep 'o=[^,]*.a=[^,]*'

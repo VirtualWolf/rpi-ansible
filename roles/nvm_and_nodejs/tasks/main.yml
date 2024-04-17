@@ -4,7 +4,7 @@
   args:
     creates: "{{ ansible_env.HOME }}/.nvm/nvm.sh"
   tags:
-    - nvm_and_nodejs
+    - nodejs
 
 - name: Add NVM variables to environment
   ansible.builtin.blockinfile:
@@ -15,7 +15,7 @@
       export NVM_DIR="{{ ansible_env.HOME }}/.nvm"
       [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
   tags:
-    - nvm_and_nodejs
+    - nodejs
 
 - name: Install Node.js
   shell: >
@@ -25,4 +25,4 @@
     chdir: "{{ ansible_env.HOME }}"
     creates: "{{ ansible_env.HOME }}/.nvm/versions/node/v{{ nodejs_version }}"
   tags:
-    - nvm_and_nodejs
+    - nodejs

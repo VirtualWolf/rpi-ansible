@@ -31,7 +31,7 @@
 - name: Hyperpixel Brightness Control configuration
   ansible.builtin.import_tasks: hyperpixel_brightness_control.yml
   tags:
-    - hyperpixel_brightness_control
+    - hyperpixel-brightness-control
 
 - name: Reboot
   become: true
@@ -40,5 +40,5 @@
 - name: Refresh Dashboard
   ansible.builtin.import_tasks: refresh_dashboard.yml
   tags:
-    - refresh_dashboard
+    - refresh-dashboard
     - never

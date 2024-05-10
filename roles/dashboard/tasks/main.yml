@@ -1,7 +1,4 @@
-# For some reason there's no problem with the Zero W, but the Zero 2 W has
-# horrendous issues with the wifi connection when power_save is turned on
-- name: Disable wifi power saving for Raspberry Pi Zero W 2
-  when: ansible_facts["architecture"] != "arm6l"
+- name: Disable wifi power saving
   become: true
   ansible.builtin.lineinfile:
     path: /etc/rc.local

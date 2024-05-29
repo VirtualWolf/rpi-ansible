@@ -75,6 +75,7 @@
       - tmux
       - jq
       - mosh
+      - moreutils
   tags:
     - install-packages
 

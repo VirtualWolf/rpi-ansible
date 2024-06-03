@@ -46,4 +46,5 @@ To make it easier to run individual tasks that might need occasionally updating 
 * `refresh-dashboard` — This won't run without explicitly setting the `--tags refresh-dashboard` flag and will do a full browser refresh, useful for picking up changes in the Pi Home Dashboard pages.
 
 ### `update_config_repository_and_bashmarks.yml`
-* `update_config_only` — Only pulls the latest commits from the configuration repository and doesn't do anything else.
+* `update-config` — Pulls the latest commits from the configuration repository and doesn't do anything else
+* `update-bashmarks` — Updates the [bashmarks](https://github.com/huyng/bashmarks/) configuration on all hosts

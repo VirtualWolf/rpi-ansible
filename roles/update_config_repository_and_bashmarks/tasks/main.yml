@@ -8,7 +8,7 @@
     dest: "{{ source_dir }}/config"
   register: config_repository
   tags:
-    - update_config_only
+    - update-config
 
 - name: Update SSH config file permissions after a repository update
   ansible.builtin.file:
@@ -16,7 +16,7 @@
     mode: "600"
   when: config_repository.changed == true
   tags:
-    - update_config_only
+    - update-config
 
 - name: Run user shell setup tasks
   ansible.builtin.include_role:
@@ -35,6 +35,8 @@
     block: |
       export DIR_s="{{ source_dir }}"
       export DIR_config="{{ source_dir }}/config"
+  tags:
+    - update-bashmarks
 
 - name: Configure dashboard bashmarks bookmarks
   ansible.builtin.blockinfile:
@@ -45,6 +47,8 @@
       export DIR_hbc="{{ source_dir }}/hyperpixel-brightness-control"
   when:
     - inventory_hostname in groups.dashboards
+  tags:
+    - update-bashmarks
 
 - name: Configure e-ink dashboard bashmarks bookmarks
   ansible.builtin.blockinfile:
@@ -55,6 +59,8 @@
       export DIR_ptd="{{ source_dir }}/papirus-temperature-displayer"
   when:
     - inventory_hostname in groups.e_ink_dashboards
+  tags:
+    - update-bashmarks
 
 - name: Configure server bashmarks bookmarks
   ansible.builtin.blockinfile:
@@ -68,3 +74,5 @@
       export DIR_shairport="{{ source_dir }}/shairport-sync"
   when:
     - inventory_hostname in groups.server
+  tags:
+    - update-bashmarks

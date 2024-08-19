@@ -76,6 +76,7 @@
       - jq
       - mosh
       - moreutils
+      - dnsutils
   tags:
     - install-packages
 

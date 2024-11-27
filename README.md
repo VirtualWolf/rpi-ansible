@@ -38,7 +38,8 @@ To make it easier to run individual tasks that might need occasionally updating 
 * `mosquitto`
 * `pi-home-dashboard`
 * `pvoutput-uploader`
-* `shairport-sync`
+* `shairport-sync` — Builds installs both `shairport-sync` as well as the required `nqptp` dependency
+* `update-shairport-sync` — Stops the `shairport-sync` systemd service, uninstalls `shairport-sync` and removes the repository, and clones, builds, and installs it afresh.
 
 ### `dashboards.yml`
 * `browser` — Configures the web browsers and the URL they'll launch to on boot.

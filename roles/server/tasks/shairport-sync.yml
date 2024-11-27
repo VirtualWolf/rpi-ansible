@@ -25,6 +25,8 @@
       - uuid-dev
       - libgcrypt-dev
       - xxd
+  tags:
+    - update-shairport-sync
 
 #########
 # NQPTP #
@@ -69,16 +71,43 @@
 # SHAIRPORT SYNC #
 ##################
 
+- name: Stop shairport-sync systemd service
+  become: true
+  ansible.builtin.systemd:
+    name: shairport-sync
+    enabled: false
+    state: stopped
+  tags:
+    - never
+    - update-shairport-sync
+
+- name: Remove old shairport-sync files and repository
+  become: true
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: absent
+  with_items:
+    - /usr/local/bin/shairport-sync
+    - /lib/systemd/system/shairport-sync.service
+    - "{{ source_dir }}/shairport-sync/"
+  tags:
+    - never
+    - update-shairport-sync
+
 - name: Clone shairport-sync
   ansible.builtin.git:
     repo: https://github.com/mikebrady/shairport-sync.git
     dest: "{{ source_dir }}/shairport-sync"
     version: "{{ shairport_sync_version }}"
+  tags:
+    - update-shairport-sync
 
 - name: shairport-sync autoreconf
   ansible.builtin.command: autoreconf -fi
   args:
     chdir: "{{ source_dir }}/shairport-sync"
+  tags:
+    - update-shairport-sync
 
 - name: shairport-sync configure
   ansible.builtin.command:
@@ -93,17 +122,23 @@
       - --with-airplay-2
   args:
     chdir: "{{ source_dir }}/shairport-sync"
+  tags:
+    - update-shairport-sync
 
 - name: shairport-sync make
   ansible.builtin.command: make
   args:
     chdir: "{{ source_dir }}/shairport-sync"
+  tags:
+    - update-shairport-sync
 
 - name: shairport-sync make install
   become: true
   ansible.builtin.command: make install
   args:
     chdir: "{{ source_dir }}/shairport-sync"
+  tags:
+    - update-shairport-sync
 
 - name: Enable and start shairport-sync
   become: true
@@ -111,3 +146,5 @@
     name: shairport-sync
     enabled: true
     state: started
+  tags:
+    - update-shairport-sync

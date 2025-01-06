@@ -1,6 +1,6 @@
 {
     "brokerAddress": "{{ mqtt_host }}",
     "clientId": "display-brightness-control_{{ inventory_hostname }}",
-    "topic": "commands/displays",
+    "topic": "{{ mqtt_topics.display_commands }}",
     "brightness": "{{ hyperpixel_brightness_setting }}"
 }

@@ -3,19 +3,19 @@
     "clientId": "pi-home-dashboard",
 	"topics": {
         "weather": [
-            "home/outdoor/weather",
-            "home/indoor/weather",
-            "home/office/weather",
-            "home/backroom/weather"
+            "{{ mqtt_topics.outdoor.weather }}",
+            "{{ mqtt_topics.indoor.weather }}",
+            "{{ mqtt_topics.office.weather }}",
+            "{{ mqtt_topics.backroom.weather }}"
         ],
         "airquality": [
-            "home/outdoor/airquality"
+            "{{ mqtt_topics.outdoor.airquality }}"
         ],
         "power": [
-            "home/power"
+            "{{ mqtt_topics.power_usage }}"
         ],
         "displays": [
-            "commands/displays"
+            "{{ mqtt_topics.display_commands }}"
         ]
     },
     "location": {

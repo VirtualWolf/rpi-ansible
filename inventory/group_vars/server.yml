@@ -20,7 +20,6 @@ powerwall_password: "{{ lookup('community.general.onepassword', 'Powerwall', fie
 pvoutput_timezone: Australia/Sydney
 pvoutput_api_key: "{{ lookup('community.general.onepassword', 'PVOutput', field='api key') }}"
 pvoutput_system_id: "{{ lookup('community.general.onepassword', 'PVOutput', field='system id') }}"
-mqtt_topic: home/power
 
 
 #####################

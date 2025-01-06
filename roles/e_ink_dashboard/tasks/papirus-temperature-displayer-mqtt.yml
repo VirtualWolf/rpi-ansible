@@ -1,0 +1,26 @@
+- name: Clone papirus-temperature-displayer-mqtt repository
+  ansible.builtin.git:
+    repo: "https://github.com/VirtualWolf/papirus-temperature-displayer-mqtt.git"
+    dest: "{{ source_dir }}/papirus-temperature-displayer-mqtt"
+  register: temperature_displayer_repository
+
+- name: Add papirus-temperature-displayer-mqtt configuration
+  ansible.builtin.template:
+    src: templates/papirus-temperature-displayer-mqtt.config.json.j2
+    dest: "{{ source_dir }}/papirus-temperature-displayer-mqtt/config.json"
+  register: temperature_displayer_config
+
+- name: Add systemd unit for papirus-temperature-displayer-mqtt
+  become: true
+  ansible.builtin.template:
+    src: templates/papirus-temperature-displayer-mqtt.service.j2
+    dest: /usr/lib/systemd/system/papirus-temperature-displayer-mqtt.service
+    mode: '0400'
+
+- name: Enable papirus-temperature-displayer-mqtt systemd service
+  become: true
+  ansible.builtin.systemd:
+    name: papirus-temperature-displayer-mqtt
+    enabled: true
+    state: "{{ 'restarted' if temperature_displayer_repository.changed or temperature_displayer_config.changed else 'started' }}"
+    daemon_reload: true

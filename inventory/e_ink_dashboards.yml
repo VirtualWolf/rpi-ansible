@@ -1,3 +1,4 @@
 e_ink_dashboards:
   hosts:
     pi:
+    zerotoo:

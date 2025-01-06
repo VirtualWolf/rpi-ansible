@@ -1,0 +1,6 @@
+{
+    "broker": "{{ mqtt_host }}",
+    "display_control_topic": "{{ mqtt_topics.display_commands }}/{{ ansible_hostname }}",
+    "upper_location_topic": "{{ mqtt_topics.outdoor.weather }}",
+    "lower_location_topic": "{{ mqtt_topics.backroom.weather }}"
+}

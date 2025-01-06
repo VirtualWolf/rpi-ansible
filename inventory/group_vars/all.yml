@@ -16,3 +16,18 @@ boot_config_txt_path: |-
   {%- else -%}
     /boot/config.txt
   {%- endif -%}
+
+mqtt_host: fourbee
+
+mqtt_topics:
+  outdoor:
+    weather: home/outdoor/weather
+    airquality: home/outdoor/airquality
+  indoor:
+    weather: home/indoor/weather
+  office:
+    weather: home/office/weather
+  backroom:
+    weather: home/backroom/weather
+  power_usage: home/power
+  display_commands: commands/displays

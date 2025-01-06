@@ -1,0 +1,72 @@
+- name: Install PaPiRus required packages
+  become: true
+  ansible.builtin.apt:
+    pkg:
+      - gcc
+      - make
+      - whiptail
+      - bc
+      - i2c-tools
+      - libfuse-dev
+      - libraspberrypi-dev
+      - raspberrypi-kernel-headers
+      - fonts-freefont-ttf
+      - python3-setuptools
+      - python3-pil
+      - python3-smbus
+      - python3-dateutil
+      - python3-distutils
+      - python3-asyncio-mqtt
+  tags:
+    - install-packages
+
+- name: Clone PaPiRus repository
+  become: true
+  ansible.builtin.git:
+    repo: "https://github.com/PiSupply/PaPiRus.git"
+    dest: "{{ source_dir }}/papirus"
+
+- name: Install PaPiRus library
+  become: true
+  ansible.builtin.command: python3 setup.py install
+  args:
+    chdir: "{{ source_dir }}/papirus"
+    creates: /usr/local/bin/papirus-set
+
+- name: Clone epd_fuse driver respository
+  become: true
+  ansible.builtin.git:
+    repo: "https://github.com/repaper/gratis.git"
+    dest: "{{ source_dir }}/gratis"
+
+- name: Build epd_fuse driver
+  become: true
+  ansible.builtin.command: make rpi EPD_IO=epd_io.h PANEL_VERSION='V231_G2'
+  args:
+    chdir: "{{ source_dir }}/gratis"
+    creates: "{{ source_dir }}/gratis/PlatformWithOS/driver-common/epd_fuse"
+
+- name: Install epd_fuse driver
+  become: true
+  ansible.builtin.command: make rpi-install EPD_IO=epd_io.h PANEL_VERSION='V231_G2'
+  args:
+    chdir: "{{ source_dir }}/gratis"
+    creates: /usr/sbin/epd_fuse
+
+- name: Configure PaPiRus library for 2.7" display
+  become: true
+  ansible.builtin.lineinfile:
+    path: /etc/default/epd-fuse
+    line: EPD_SIZE=2.7
+
+- name: Enable epd-fuse service
+  become: true
+  ansible.builtin.systemd:
+    name: epd-fuse
+    enabled: true
+  register: epd_fuse
+
+- name: Reboot
+  become: true
+  ansible.builtin.reboot:
+  when: epd_fuse.changed

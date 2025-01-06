@@ -2,5 +2,6 @@
   hosts: e_ink_dashboards
   roles:
     - initialisation
-    - docker
+    - role: docker
+      when: ansible_facts["architecture"] != "arm6l"
     - e_ink_dashboard

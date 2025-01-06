@@ -1,0 +1,13 @@
+[Unit]
+Description=A Python script to listen to an MQTT topic and turn on a PaPiRus e-ink display
+Wants=network-online.target
+After=network.target
+
+[Service]
+Type=exec
+ExecStart=/usr/bin/python3 {{ source_dir }}/papirus-temperature-displayer-mqtt/python_temperature_displayer_mqtt.py
+Restart=always
+WorkingDirectory={{ source_dir }}/papirus-temperature-displayer-mqtt
+
+[Install]
+WantedBy=multi-user.target

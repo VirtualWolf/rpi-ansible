@@ -28,6 +28,12 @@ pvoutput_system_id: "{{ lookup('community.general.onepassword', 'PVOutput', fiel
 
 pi_home_dashboard_latitude: -33.872761
 pi_home_dashboard_longitude: 151.205338
+esp32_client_ids:
+  - outdoor
+  - outdoor-airquality
+  - backroom
+  - indoor
+  - office
 
 ############################
 # SHAIRPORT SYNC AND NQPTP #

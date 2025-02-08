@@ -14,7 +14,7 @@ mqtt_host: "{{ ansible_hostname }}"
 ##################################
 
 powerwall_to_pvoutput_uploader_postgres_password: "{{ lookup('community.general.onepassword', 'PVOutput', field='docker postgres password') }}"
-powerwall_url: https://powerwall
+powerwall_url: https://10.0.2.202
 powerwall_email: "{{ lookup('community.general.onepassword', 'Powerwall', field='username') }}"
 powerwall_password: "{{ lookup('community.general.onepassword', 'Powerwall', field='password') }}"
 pvoutput_timezone: Australia/Sydney

@@ -34,6 +34,8 @@ esp32_client_ids:
   - backroom
   - indoor
   - office
+  - indoor-aq-status
+  - office-aq-status
 
 ############################
 # SHAIRPORT SYNC AND NQPTP #

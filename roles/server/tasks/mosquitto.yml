@@ -14,4 +14,7 @@
   ansible.builtin.template:
     src: templates/mosquitto.conf.j2
     dest: /etc/mosquitto/conf.d/custom.conf
+    owner: mosquitto
+    group: mosquitto
+    mode: '400'
   notify: Restart Mosquitto
